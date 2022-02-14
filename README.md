@@ -1,4 +1,7 @@
 # chess-engine-with-ui
+
+<img src="https://raw.githubusercontent.com/Ahmed-5/chess-engine-with-ui/main/demo.png" alt="demo of the ui">
+
 A UI chess engine to play chess built with pygame
 
 An AI agent like minimax, minimax with alpha-beta pruning, or negamax will be added later
