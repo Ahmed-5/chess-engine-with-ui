@@ -9,7 +9,7 @@ DIMENSION = 8
 SQ_SIZE = WIDTH//DIMENSION
 MAX_FPS = 15
 IMAGES = {}
-colors = [p.Color("white"), p.Color("gray")]
+colors = [p.Color("#EBCD7D"), p.Color("#B88B4A")] # light, dark
 
 
 def load_images():
