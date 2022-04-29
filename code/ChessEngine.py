@@ -1,5 +1,5 @@
 class Move():
-    def __init__(self, start_sq, end_sq, board, is_enpassant=False, is_castle=False) -> None:
+    def __init__(self, start_sq, end_sq, board, is_enpassant=False, is_castle=False, promotion_choice=None) -> None:
         self.start_row = start_sq[0]
         self.start_col = start_sq[1]
         self.end_row = end_sq[0]
@@ -15,9 +15,13 @@ class Move():
             self.piece_captured = board[self.start_row][self.end_col]
 
         self.is_castle = is_castle
+        self.promotion_choice = promotion_choice
 
         self.move_id = "{}{}{}{}".format(
             self.start_row, self.start_col, self.end_row, self.end_col)
+        if (self.is_promotion):
+            self.move_id = "{}{}{}{}{}".format(
+                self.start_row, self.start_col, self.end_row, self.end_col, self.promotion_choice)
 
     def rank_to_row(self, rank):
         if rank > 0 and rank < 9:
@@ -49,6 +53,8 @@ class Move():
         return "{}{}".format(file, rank)
 
     def get_chess_notation(self):
+        if self.is_promotion:
+            return self.get_rank_file(self.start_row, self.start_col)+self.get_rank_file(self.end_row, self.end_col)+self.promotion_choice
         return self.get_rank_file(self.start_row, self.start_col)+self.get_rank_file(self.end_row, self.end_col)
 
     def __eq__(self, __o: object) -> bool:
@@ -130,20 +136,17 @@ class GameState():
             self.enpassant_square = ()
 
         if move.is_promotion:
-            wrong_choice = True
-            choices = 'qrbn'
-            while wrong_choice:
-                choice = input("Choose the piece type\n").strip()[0]
-                if choice in choices:
-                    self.board[move.end_row][move.end_col] = move.piece_moved[0] + choice
-                    wrong_choice = False
+            choice = move.promotion_choice
+            self.board[move.end_row][move.end_col] = move.piece_moved[0] + choice
 
         if move.is_castle:
             if move.end_col - move.start_col == 2:
-                self.board[move.end_row][move.end_col-1] = move.piece_moved[0]+'r'
+                self.board[move.end_row][move.end_col -
+                                         1] = move.piece_moved[0]+'r'
                 self.board[move.end_row][7] = '--'
             else:
-                self.board[move.end_row][move.end_col+1] = move.piece_moved[0]+'r'
+                self.board[move.end_row][move.end_col +
+                                         1] = move.piece_moved[0]+'r'
                 self.board[move.end_row][0] = '--'
 
         self.update_castle_rights(move)
@@ -221,38 +224,98 @@ class GameState():
         if self.white_to_move:
             if self.board[r-1][c] == "--":
                 if not piece_pinned or pin_direction == (-1, 0):
-                    moves.append(Move((r, c), (r-1, c), self.board))
+                    if r == 1:
+                        moves.append(
+                            Move((r, c), (r-1, c), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r-1, c), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r-1, c), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r-1, c), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r-1, c), self.board))
                     if r == 6 and self.board[r-2][c] == "--":
                         moves.append(Move((r, c), (r-2, c), self.board))
 
             if not piece_pinned or pin_direction == (-1, -1):
                 if c > 0 and self.board[r-1][c-1].startswith('b'):
-                    moves.append(Move((r, c), (r-1, c-1), self.board))
+                    if r == 1:
+                        moves.append(
+                            Move((r, c), (r-1, c-1), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r-1, c-1), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r-1, c-1), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r-1, c-1), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r-1, c-1), self.board))
                 if (r-1, c-1) == self.enpassant_square:
                     moves.append(Move((r, c), (r-1, c-1), self.board, True))
 
             if not piece_pinned or pin_direction == (-1, 1):
                 if c+1 < len(self.board[r-1]) and self.board[r-1][c+1].startswith('b'):
-                    moves.append(Move((r, c), (r-1, c+1), self.board))
+                    if r == 1:
+                        moves.append(
+                            Move((r, c), (r-1, c+1), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r-1, c+1), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r-1, c+1), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r-1, c+1), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r-1, c+1), self.board))
                 if (r-1, c+1) == self.enpassant_square:
                     moves.append(Move((r, c), (r-1, c+1), self.board, True))
 
         else:
             if self.board[r+1][c] == "--":
                 if not piece_pinned or pin_direction == (1, 0):
-                    moves.append(Move((r, c), (r+1, c), self.board))
+                    if r == 6:
+                        moves.append(
+                            Move((r, c), (r+1, c), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r+1, c), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r+1, c), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r+1, c), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r+1, c), self.board))
                     if r == 1 and self.board[r+2][c] == "--":
                         moves.append(Move((r, c), (r+2, c), self.board))
 
             if not piece_pinned or pin_direction == (1, -1):
                 if c > 0 and self.board[r+1][c-1].startswith('w'):
-                    moves.append(Move((r, c), (r+1, c-1), self.board))
+                    if r == 6:
+                        moves.append(
+                            Move((r, c), (r+1, c-1), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r+1, c-1), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r+1, c-1), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r+1, c-1), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r+1, c-1), self.board))
                 if (r+1, c-1) == self.enpassant_square:
                     moves.append(Move((r, c), (r+1, c-1), self.board, True))
 
             if not piece_pinned or pin_direction == (1, 1):
                 if c+1 < len(self.board[r+1]) and self.board[r+1][c+1].startswith('w'):
-                    moves.append(Move((r, c), (r+1, c+1), self.board))
+                    if r == 6:
+                        moves.append(
+                            Move((r, c), (r+1, c+1), self.board, promotion_choice="q"))
+                        moves.append(
+                            Move((r, c), (r+1, c+1), self.board, promotion_choice="r"))
+                        moves.append(
+                            Move((r, c), (r+1, c+1), self.board, promotion_choice="b"))
+                        moves.append(
+                            Move((r, c), (r+1, c+1), self.board, promotion_choice="n"))
+                    else:
+                        moves.append(Move((r, c), (r+1, c+1), self.board))
                 if (r+1, c+1) == self.enpassant_square:
                     moves.append(Move((r, c), (r+1, c+1), self.board, True))
 
@@ -365,12 +428,14 @@ class GameState():
     def get_kingside_castle(self, r, c, moves, ally_color):
         if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
             if not self.square_under_attack(r, c+1) and not self.square_under_attack(r, c+2):
-                moves.append(Move((r,c), (r,c+2), self.board, is_castle=True))
+                moves.append(
+                    Move((r, c), (r, c+2), self.board, is_castle=True))
 
     def get_queenside_castle(self, r, c, moves, ally_color):
         if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
             if not self.square_under_attack(r, c-1) and not self.square_under_attack(r, c-2):
-                moves.append(Move((r,c), (r,c-2), self.board, is_castle=True))
+                moves.append(
+                    Move((r, c), (r, c-2), self.board, is_castle=True))
 
     def get_all_possible_moves(self):
         moves = []
@@ -477,10 +542,10 @@ class GameState():
 
         if len(moves) == 0:
             if self.is_in_check:
-                print("CHECKMATE")
+                # print("CHECKMATE")
                 self.checkmate = True
             else:
-                print("STALEMATE")
+                # print("STALEMATE")
                 self.stalemate = True
         else:
             self.checkmate = False
