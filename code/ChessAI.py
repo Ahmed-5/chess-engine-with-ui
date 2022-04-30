@@ -37,23 +37,28 @@ def findMinMaxDepth2Move(gs: GameState, valid_moves):
     for m in valid_moves:
         gs.make_move(m)
         oppponent_moves = gs.get_valid_moves()
-        opponent_max_score = -CHECKMATE
-        for oppo_move in oppponent_moves:
-            gs.make_move(oppo_move)
-            gs.get_valid_moves()
-            if gs.checkmate:
-                score = -turn*CHECKMATE
-            elif gs.stalemate:
-                score = STALEMATE
-            else:
-                score = -turn*scoreBoard(gs.board)
-            if score > opponent_max_score:
-                opponent_max_score = score
+        if gs.checkmate:
+            opponent_max_score = -CHECKMATE
+        elif gs.stalemate:
+            opponent_max_score = STALEMATE
+        else:
+            opponent_max_score = -CHECKMATE
+            for oppo_move in oppponent_moves:
+                gs.make_move(oppo_move)
+                gs.get_valid_moves()
+                if gs.checkmate:
+                    score = -turn*CHECKMATE
+                elif gs.stalemate:
+                    score = STALEMATE
+                else:
+                    score = -turn*scoreBoard(gs.board)
+                if score > opponent_max_score:
+                    opponent_max_score = score
+                gs.undo_move()
+            if opponent_max_score < opponenet_minmax_score:
+                opponenet_minmax_score = opponent_max_score
+                best_move = m
             gs.undo_move()
-        if opponent_max_score < opponenet_minmax_score:
-            opponenet_minmax_score = opponent_max_score
-            best_move = m
-        gs.undo_move()
     return best_move
 
 
