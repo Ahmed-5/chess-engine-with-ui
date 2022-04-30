@@ -2,7 +2,7 @@ import pygame as p
 from pygame.surface import Surface
 from sqlalchemy import true
 from ChessEngine import GameState, Move
-from ChessAI import findGreedyBestMove
+from ChessAI import findMinMaxDepth2Move
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     sq_selected = ()
     player_clicks = []
     game_over = False
-    playerOne = True  # if human is the player true, if AI is the player false
+    playerOne = False  # if human is the player true, if AI is the player false
     playerTwo = True  # if human is the player true, if AI is the player false
 
     while(running):
@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
         # AI move logic
         if not game_over and not humanTurn:
-            ai_move = findGreedyBestMove(gs, valid_moves)
+            ai_move = findMinMaxDepth2Move(gs, valid_moves)
             gs.make_move(ai_move)
             move_made = true
             animate = true
