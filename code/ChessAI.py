@@ -47,7 +47,7 @@ def findMinMaxDepth2Move(gs: GameState, valid_moves):
                 gs.make_move(oppo_move)
                 gs.get_valid_moves()
                 if gs.checkmate:
-                    score = -turn*CHECKMATE
+                    score = CHECKMATE
                 elif gs.stalemate:
                     score = STALEMATE
                 else:

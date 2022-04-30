@@ -183,6 +183,9 @@ class GameState():
             self.castle_rights_log.pop()
             self.current_castle_rights = self.copy_castle_rights(
                 self.castle_rights_log[-1])
+            
+            self.checkmate = False
+            self.stalemate = False
 
     def update_castle_rights(self, move: Move):
         if move.piece_moved == 'wk':

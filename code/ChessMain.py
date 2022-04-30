@@ -167,6 +167,7 @@ if __name__ == '__main__':
                     gs.undo_move()
                     move_made = True
                     undone = True
+                    game_over = False
                 elif e.key == p.K_r:
                     gs = GameState()
                     valid_moves = gs.get_valid_moves()
