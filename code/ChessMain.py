@@ -116,7 +116,7 @@ if __name__ == '__main__':
     player_clicks = []
     game_over = False
     playerOne = False  # if human is the player true, if AI is the player false
-    playerTwo = True  # if human is the player true, if AI is the player false
+    playerTwo = False  # if human is the player true, if AI is the player false
 
     while(running):
         humanTurn = (gs.white_to_move and playerOne) or (
