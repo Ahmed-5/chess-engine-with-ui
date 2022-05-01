@@ -2,7 +2,7 @@ import pygame as p
 from pygame.surface import Surface
 from sqlalchemy import true
 from ChessEngine import GameState, Move
-from ChessAI import findMinMaxDepth2Move
+from ChessAI import DEPTH, findMinMaxDepth2Move, findBestMoveMinMax
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -179,7 +179,8 @@ if __name__ == '__main__':
 
         # AI move logic
         if not game_over and not humanTurn:
-            ai_move = findMinMaxDepth2Move(gs, valid_moves)
+            # ai_move = findMinMaxDepth2Move(gs, valid_moves)
+            ai_move = findBestMoveMinMax(gs, valid_moves)
             gs.make_move(ai_move)
             move_made = true
             animate = true
